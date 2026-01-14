@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Representative CRM Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6467f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101122",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex flex-col bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary rounded-lg p-1.5">
+<span class="material-symbols-outlined text-white">smart_toy</span>
+</div>
+<div>
+<h1 class="text-slate-900 dark:text-white text-base font-bold leading-none">Smart CRM</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-1">AI Implementation</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary" href="/dashboard">
+<span class="material-symbols-outlined fill-1">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="/leads">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Leads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="/pipeline">
+<span class="material-symbols-outlined">handshake</span>
+<span class="text-sm font-medium">Deals</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="/leads">
+<span class="material-symbols-outlined">check_box</span>
+<span class="text-sm font-medium">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800" href="/chat">
+<span class="material-symbols-outlined">chat</span>
+<span class="text-sm font-medium">AI Chat</span>
+</a>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</div>
+<div id="logout-btn" class="flex items-center gap-3 px-3 py-2 mt-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 cursor-pointer">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto">
+<!-- Top Navigation Bar -->
+<header class="h-16 flex items-center justify-between px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+<div class="flex-1 max-w-xl">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">search_spark</span>
+</div>
+<input id="rag-search" class="block w-full pl-10 pr-3 py-2 border-none bg-slate-100 dark:bg-slate-800 rounded-lg text-sm placeholder-slate-500 focus:ring-2 focus:ring-primary/20 transition-all outline-none" placeholder="Ask AI anything about your data (RAG)..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-4">
+<div class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+<button class="px-3 py-1 text-xs font-semibold rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white">EN</button>
+<button class="px-3 py-1 text-xs font-semibold rounded-md text-slate-500 dark:text-slate-400">HE</button>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 border-2 border-white dark:border-slate-900 rounded-full"></span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+<div class="text-right hidden sm:block">
+<p id="user-name" class="text-sm font-bold text-slate-900 dark:text-white leading-none">Loading...</p>
+<p id="user-role" class="text-xs text-slate-500 dark:text-slate-400 mt-1">--</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-cover bg-center border border-slate-200 dark:border-slate-700" data-alt="User profile avatar portrait of representative" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA8ZLtbzB_2PL-2oRMdjCW10VchXJ1ntaum_LuKolzZhKwzJ1sALefBbTrVJNPqgflJbXHBisEI90cRDXhZs59IIVKilqUzAYiAFVzvDoOjkos3ym2XSI2p15c2QGRaehLuSBnZaq1OOA0q3XiTeZGSilpPW3AU_Q1zmT0qGJeKcvfLVL6pTVAJMHnqMGskgMblAWOvWyo3OipVifTCUsQgUtBY7luyeYalcGT3_FnAq2A8YpCRO-GIxdaQyCRXZs_j4ZvedTI936DQ')">
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+<!-- KPI Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400">group</span>
+</div>
+<span id="kpi-leads-change" class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">--</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Leads</p>
+<h3 id="kpi-leads" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">--</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+<span class="material-symbols-outlined text-indigo-600 dark:text-indigo-400">trending_up</span>
+</div>
+<span id="kpi-conversion-change" class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">--</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Conversion Rate</p>
+<h3 id="kpi-conversion" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">--</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400">payments</span>
+</div>
+<span id="kpi-revenue-change" class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">--</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Revenue</p>
+<h3 id="kpi-revenue" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">--</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+<span class="material-symbols-outlined text-purple-600 dark:text-purple-400">handshake</span>
+</div>
+<span id="kpi-deals-change" class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full">--</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Deals</p>
+<h3 id="kpi-deals" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">--</h3>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+<span class="material-symbols-outlined text-amber-600 dark:text-amber-400">assignment_late</span>
+</div>
+<span id="kpi-tasks-change" class="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">--</span>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Tasks Due</p>
+<h3 id="kpi-tasks" class="text-2xl font-bold text-slate-900 dark:text-white mt-1">--</h3>
+</div>
+</div>
+<!-- Main Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+<!-- Charts Column (Left) -->
+<div class="xl:col-span-2 space-y-8">
+<!-- Revenue Bar Chart Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">Revenue: Planned vs Actual</h2>
+<select class="text-xs bg-slate-50 dark:bg-slate-800 border-none rounded-lg focus:ring-1 focus:ring-primary/20">
+<option>Last 6 Months</option>
+<option>Last Year</option>
+</select>
+</div>
+<div class="h-64 w-full flex items-end justify-around gap-4 px-2">
+<!-- Chart Mockup -->
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[60%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[45%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">Jan</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[70%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[65%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">Feb</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[55%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[60%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">Mar</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[85%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[80%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">Apr</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[65%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[75%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">May</span>
+</div>
+<div class="flex flex-col items-center gap-2 flex-1">
+<div class="w-full flex justify-center gap-1 h-full items-end">
+<div class="w-4 bg-primary/30 rounded-t-sm h-[90%]" title="Planned"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[85%]" title="Actual"></div>
+</div>
+<span class="text-[10px] text-slate-400 uppercase font-bold">Jun</span>
+</div>
+</div>
+<div class="flex justify-center gap-6 mt-6">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary/30 rounded-sm"></div>
+<span class="text-xs text-slate-500">Planned Revenue</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded-sm"></div>
+<span class="text-xs text-slate-500">Actual Revenue</span>
+</div>
+</div>
+</div>
+<!-- Profitability Line Chart Card -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Profitability Margin</h2>
+<div class="h-48 w-full relative">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<!-- Grid lines -->
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="0.5" x1="0" x2="100" y1="25" y2="25"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="0.5" x1="0" x2="100" y1="50" y2="50"></line>
+<line class="text-slate-100 dark:text-slate-800" stroke="currentColor" stroke-width="0.5" x1="0" x2="100" y1="75" y2="75"></line>
+<!-- Gradient area -->
+<path d="M0,80 L10,75 L20,85 L30,60 L40,55 L50,45 L60,50 L70,30 L80,35 L90,20 L100,15 L100,100 L0,100 Z" fill="url(#lineGradient)" opacity="0.1"></path>
+<defs>
+<lineargradient id="lineGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#6467f2"></stop>
+<stop offset="100%" stop-color="#6467f2" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Line chart -->
+<path d="M0,80 L10,75 L20,85 L30,60 L40,55 L50,45 L60,50 L70,30 L80,35 L90,20 L100,15" fill="none" stroke="#6467f2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+<span class="text-[10px] text-slate-400">40%</span>
+<span class="text-[10px] text-slate-400">30%</span>
+<span class="text-[10px] text-slate-400">20%</span>
+<span class="text-[10px] text-slate-400">10%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Side Panels (Right) -->
+<div class="space-y-8">
+<!-- Tasks Due Today Panel -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white">Tasks Due Today</h2>
+<span id="tasks-count" class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded-md">-- Left</span>
+</div>
+<div id="tasks-container" class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
+<div class="w-1.5 h-1.5 rounded-full bg-rose-500 mt-2 shrink-0"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Draft AI Strategy for Client X</p>
+<span class="text-[10px] uppercase font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded">Urgent</span>
+</div>
+<p class="text-xs text-slate-500 mt-1">Due in 2 hours • Project Alpha</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary transition-opacity">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Follow up on Proposal #402</p>
+<span class="text-[10px] uppercase font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded">Today</span>
+</div>
+<p class="text-xs text-slate-500 mt-1">Scheduled for 2:00 PM</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary transition-opacity">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+<div class="p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group">
+<div class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Prep for Tech Sync with CTO</p>
+<span class="text-[10px] uppercase font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 rounded">Today</span>
+</div>
+<p class="text-xs text-slate-500 mt-1">Tech Audit Section</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary transition-opacity">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</button>
+</div>
+</div>
+<button class="w-full p-4 text-sm font-semibold text-primary hover:bg-primary/5 border-t border-slate-100 dark:border-slate-800 transition-colors">
+                                View all tasks
+                            </button>
+</div>
+<!-- Recent Activity Feed -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white mb-6">Recent Activity</h2>
+<div id="activity-container" class="relative space-y-6 before:absolute before:inset-y-0 before:left-[11px] before:w-[2px] before:bg-slate-100 dark:before:bg-slate-800">
+<div class="relative flex gap-4">
+<div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-white text-[14px]">person_add</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">New lead generated via LinkedIn</p>
+<p class="text-xs text-slate-500">Sarah Jennings • 12m ago</p>
+</div>
+</div>
+<div class="relative flex gap-4">
+<div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-white text-[14px]">swap_horiz</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Deal #402 moved to Negotiation</p>
+<p class="text-xs text-slate-500">Auto-update from Salesforce • 1h ago</p>
+</div>
+</div>
+<div class="relative flex gap-4">
+<div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-white text-[14px]">mail</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">Email campaign "AI Launch" started</p>
+<p class="text-xs text-slate-500">Marketing Dept • 3h ago</p>
+</div>
+</div>
+<div class="relative flex gap-4">
+<div class="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-white text-[14px]">priority_high</span>
+</div>
+<div class="flex-1">
+<p class="text-sm font-medium text-slate-900 dark:text-white">SLA Breach Warning for Client Z</p>
+<p class="text-xs text-slate-500">System Monitor • 5h ago</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- API Script -->
+<script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    // Check authentication
+    if (!localStorage.getItem('crm_token')) {
+        window.location.href = '/login';
+    }
+
+    // Load user info
+    const user = JSON.parse(localStorage.getItem('crm_user') || '{}');
+    document.getElementById('user-name').textContent = user.name || 'User';
+    document.getElementById('user-role').textContent = user.role || 'Representative';
+
+    // Logout handler
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('crm_token');
+        localStorage.removeItem('crm_user');
+        window.location.href = '/login';
+    });
+
+    // Format currency
+    function formatCurrency(amount) {
+        if (amount >= 1000000) {
+            return '$' + (amount / 1000000).toFixed(1) + 'M';
+        } else if (amount >= 1000) {
+            return '$' + (amount / 1000).toFixed(0) + 'k';
+        }
+        return '$' + amount.toFixed(0);
+    }
+
+    // Load dashboard data
+    async function loadDashboard() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+
+            // Fetch dashboard analytics
+            const dashboardRes = await fetch(`${API_BASE}/analytics/dashboard`, { headers });
+            if (!dashboardRes.ok) throw new Error('Failed to load dashboard');
+            const dashboard = await dashboardRes.json();
+
+            // Update KPIs
+            document.getElementById('kpi-leads').textContent = dashboard.total_leads?.toLocaleString() || '0';
+            document.getElementById('kpi-leads-change').textContent = '+' + (dashboard.new_leads_this_month || 0);
+
+            const conversionRate = dashboard.conversion_rate || 0;
+            document.getElementById('kpi-conversion').textContent = conversionRate.toFixed(1) + '%';
+            document.getElementById('kpi-conversion-change').textContent = conversionRate > 15 ? '+' + (conversionRate - 15).toFixed(1) + '%' : '0%';
+
+            document.getElementById('kpi-revenue').innerHTML = formatCurrency(dashboard.total_revenue || 0) +
+                ' <span class="text-xs font-normal text-slate-400">/ ' + formatCurrency(dashboard.projected_revenue || 0) + '</span>';
+            const revenuePercent = dashboard.projected_revenue ? ((dashboard.total_revenue / dashboard.projected_revenue) * 100 - 100).toFixed(0) : 0;
+            const revenueChangeEl = document.getElementById('kpi-revenue-change');
+            revenueChangeEl.textContent = (revenuePercent >= 0 ? '+' : '') + revenuePercent + '%';
+            revenueChangeEl.className = revenuePercent >= 0
+                ? 'text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full'
+                : 'text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-full';
+
+            document.getElementById('kpi-deals').textContent = dashboard.active_deals || '0';
+            document.getElementById('kpi-deals-change').textContent = '+' + (dashboard.deals_this_month || 0);
+
+            document.getElementById('kpi-tasks').textContent = dashboard.overdue_tasks || '0';
+            document.getElementById('kpi-tasks-change').textContent = dashboard.overdue_tasks > 0 ? 'Overdue' : '0%';
+
+            // Load tasks due today
+            loadTasks(headers);
+
+            // Load recent activity
+            loadActivity(headers);
+
+        } catch (error) {
+            console.error('Dashboard error:', error);
+        }
+    }
+
+    async function loadTasks(headers) {
+        try {
+            const tasksRes = await fetch(`${API_BASE}/tasks/due-today`, { headers });
+            if (!tasksRes.ok) return;
+            const tasks = await tasksRes.json();
+
+            document.getElementById('tasks-count').textContent = tasks.length + ' Left';
+
+            const container = document.getElementById('tasks-container');
+            if (tasks.length === 0) {
+                container.innerHTML = '<div class="p-4 text-center text-slate-500">No tasks due today</div>';
+                return;
+            }
+
+            container.innerHTML = tasks.slice(0, 5).map(task => `
+                <div class="p-4 flex items-start gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group" data-task-id="${task.id}">
+                    <div class="w-1.5 h-1.5 rounded-full ${task.priority === 'high' ? 'bg-rose-500' : 'bg-amber-500'} mt-2 shrink-0"></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <p class="text-sm font-semibold text-slate-900 dark:text-white">${task.title}</p>
+                            <span class="text-[10px] uppercase font-bold ${task.priority === 'high' ? 'text-rose-500 bg-rose-50 dark:bg-rose-950/30' : 'text-amber-500 bg-amber-50 dark:bg-amber-950/30'} px-2 py-0.5 rounded">${task.priority === 'high' ? 'Urgent' : 'Today'}</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">${task.description || 'No description'}</p>
+                    </div>
+                    <button class="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-primary transition-opacity task-complete-btn">
+                        <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                    </button>
+                </div>
+            `).join('');
+
+            // Add task completion handlers
+            container.querySelectorAll('.task-complete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const taskDiv = btn.closest('[data-task-id]');
+                    const taskId = taskDiv.dataset.taskId;
+                    try {
+                        await fetch(`${API_BASE}/tasks/${taskId}/status`, {
+                            method: 'PATCH',
+                            headers,
+                            body: JSON.stringify({ status: 'completed' })
+                        });
+                        taskDiv.remove();
+                        const count = container.querySelectorAll('[data-task-id]').length;
+                        document.getElementById('tasks-count').textContent = count + ' Left';
+                    } catch (err) {
+                        console.error('Failed to complete task:', err);
+                    }
+                });
+            });
+
+        } catch (error) {
+            console.error('Tasks error:', error);
+        }
+    }
+
+    async function loadActivity(headers) {
+        try {
+            // Load recent interactions as activity
+            const leadsRes = await fetch(`${API_BASE}/leads?limit=5`, { headers });
+            if (!leadsRes.ok) return;
+            const leads = await leadsRes.json();
+
+            const container = document.getElementById('activity-container');
+            const activities = leads.slice(0, 4).map((lead, i) => {
+                const colors = ['bg-emerald-500', 'bg-indigo-500', 'bg-blue-500', 'bg-rose-500'];
+                const icons = ['person_add', 'swap_horiz', 'mail', 'priority_high'];
+                const timeAgo = getTimeAgo(new Date(lead.created_at));
+                return `
+                    <div class="relative flex gap-4">
+                        <div class="w-6 h-6 rounded-full ${colors[i % colors.length]} flex items-center justify-center z-10">
+                            <span class="material-symbols-outlined text-white text-[14px]">${icons[i % icons.length]}</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">New lead: ${lead.company_name || lead.contact_name}</p>
+                            <p class="text-xs text-slate-500">${lead.source || 'Unknown source'} • ${timeAgo}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = activities || '<div class="text-slate-500 text-sm">No recent activity</div>';
+
+        } catch (error) {
+            console.error('Activity error:', error);
+        }
+    }
+
+    function getTimeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        if (seconds < 60) return seconds + 's ago';
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return minutes + 'm ago';
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return hours + 'h ago';
+        const days = Math.floor(hours / 24);
+        return days + 'd ago';
+    }
+
+    // RAG Search Handler
+    document.getElementById('rag-search').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const query = e.target.value.trim();
+            if (!query) return;
+
+            try {
+                const token = localStorage.getItem('crm_token');
+                const res = await fetch(`${API_BASE}/rag/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ question: query })
+                });
+
+                if (!res.ok) throw new Error('RAG query failed');
+                const result = await res.json();
+
+                // Show result in alert (you could create a modal instead)
+                alert('AI Response:\n\n' + result.answer);
+                e.target.value = '';
+            } catch (error) {
+                console.error('RAG error:', error);
+                alert('Failed to process your question. Please try again.');
+            }
+        }
+    });
+
+    // Initialize dashboard
+    loadDashboard();
+</script>
+</body></html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Multi-Mode Customer Chatbot</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#6467f2",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101122",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d0e1b] dark:text-[#f8f8fc]">
+<div class="flex h-screen w-full overflow-hidden">
+<!-- SIDEBAR -->
+<aside class="w-80 flex-shrink-0 border-r border-[#e7e7f3] dark:border-[#2d2e4a] bg-white dark:bg-[#16172d] flex flex-col">
+<!-- Brand/Logo -->
+<a href="/dashboard" class="p-6 flex items-center gap-3 hover:bg-[#f0f0f5] dark:hover:bg-[#252644] transition-colors">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-none">Smart CRM</h1>
+<p class="text-xs text-[#4c4d9a] dark:text-[#9394d1]">AI Implementation</p>
+</div>
+</a>
+<!-- Talk to Human -->
+<div class="px-6 mb-6">
+<button class="w-full flex items-center justify-center gap-2 py-3 border-2 border-primary text-primary font-bold rounded-lg hover:bg-primary/5 transition-colors">
+<span class="material-symbols-outlined text-[20px]">person</span>
+<span>Talk to Human</span>
+</button>
+</div>
+<!-- History Section -->
+<div class="flex-1 overflow-y-auto px-4 scrollbar-hide">
+<div class="mb-4">
+<h3 class="px-2 text-[11px] font-bold text-[#4c4d9a] dark:text-[#9394d1] uppercase tracking-wider mb-2">Today</h3>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-medium truncate">Enterprise Quote Query</p>
+</div>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] text-[#4c4d9a] dark:text-[#9394d1] cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-medium truncate">Architecture Review</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="px-2 text-[11px] font-bold text-[#4c4d9a] dark:text-[#9394d1] uppercase tracking-wider mb-2">Yesterday</h3>
+<div class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] text-[#4c4d9a] dark:text-[#9394d1] cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-medium truncate">Data Pipeline FAQ</p>
+</div>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] text-[#4c4d9a] dark:text-[#9394d1] cursor-pointer">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm font-medium truncate">Support Ticket #2940</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- User Profile -->
+<div class="p-4 border-t border-[#e7e7f3] dark:border-[#2d2e4a]">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] cursor-pointer">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p id="user-name" class="text-sm font-bold truncate">Loading...</p>
+<p id="user-role" class="text-xs text-[#4c4d9a] dark:text-[#9394d1] truncate">--</p>
+</div>
+<span id="logout-btn" class="material-symbols-outlined text-red-500 cursor-pointer hover:text-red-600">logout</span>
+</div>
+</div>
+</aside>
+<!-- MAIN CHAT AREA -->
+<main class="flex-1 flex flex-col bg-white dark:bg-[#101122]">
+<!-- Top Nav / Mode Selector -->
+<header class="h-16 border-b border-[#e7e7f3] dark:border-[#2d2e4a] flex items-center justify-between px-8 bg-white/80 dark:bg-[#101122]/80 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium text-[#4c4d9a] dark:text-[#9394d1]">AI Agent Live</span>
+</div>
+</div>
+<!-- Segmented Control Mode Switcher -->
+<div id="mode-selector" class="flex h-10 w-80 items-center justify-center rounded-lg bg-[#e7e7f3] dark:bg-[#252644] p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101122] has-[:checked]:shadow-sm has-[:checked]:text-primary text-[#4c4d9a] text-xs font-bold leading-normal transition-all">
+<span class="truncate">SERVICE</span>
+<input class="invisible w-0" name="mode-selector" type="radio" value="service"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101122] has-[:checked]:shadow-sm has-[:checked]:text-primary text-[#4c4d9a] text-xs font-bold leading-normal transition-all">
+<span class="truncate">SALES</span>
+<input checked="" class="invisible w-0" name="mode-selector" type="radio" value="sales"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-lg px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101122] has-[:checked]:shadow-sm has-[:checked]:text-primary text-[#4c4d9a] text-xs font-bold leading-normal transition-all">
+<span class="truncate">CONSULTING</span>
+<input class="invisible w-0" name="mode-selector" type="radio" value="consulting"/>
+</label>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] text-[#4c4d9a]">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-[#e7e7f3] dark:hover:bg-[#252644] text-[#4c4d9a]">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Message Feed -->
+<div id="message-feed" class="flex-1 overflow-y-auto p-8 flex flex-col gap-6">
+<!-- AI Message -->
+<div class="flex items-end gap-3 max-w-[70%]">
+<div class="bg-primary/10 rounded-full w-10 h-10 shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">robot_2</span>
+</div>
+<div class="flex flex-col gap-1 items-start">
+<div class="flex items-center gap-2 mb-1">
+<p class="text-xs font-bold text-primary uppercase">Sales AI</p>
+<span class="text-[10px] text-[#4c4d9a] dark:text-[#9394d1]">10:24 AM</span>
+</div>
+<p class="text-sm font-normal leading-relaxed rounded-2xl rounded-bl-none px-5 py-3 bg-[#f0f0f5] dark:bg-[#252644] text-[#0d0e1b] dark:text-[#f8f8fc]">
+                        Hello! I'm currently in <b>Sales Mode</b>. I can help you with product demos, ROI calculations, and enterprise pricing. What can I do for you today?
+                    </p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex items-end gap-3 justify-end self-end max-w-[70%]">
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-[10px] text-[#4c4d9a] dark:text-[#9394d1]">10:25 AM</span>
+<p class="text-xs font-bold text-[#4c4d9a] dark:text-[#9394d1] uppercase">You</p>
+</div>
+<p class="text-sm font-normal leading-relaxed rounded-2xl rounded-br-none px-5 py-3 bg-primary text-white shadow-lg shadow-primary/20">
+                        I'm looking for a price quote for a large scale enterprise AI deployment. We have about 500 nodes and need custom training.
+                    </p>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full w-10 h-10 shrink-0" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA5TNwsUa3SwAAhWoPOw4lqjj1YDmalDfj4aCwCJWmbirItWpiIz2w3CAPEMrCWFl9DVMLRdnhmXDFfK8ou-gytWOy5VJnUuqQ4hTP_yng51VpmHRSKF4JtNp6GduF3L6XOzS0tYEsK1m8hP0UesrZ40c0BPnzwoVCAS501Q5lE2mtkvP8W8QlkVjvM5WES9FVm_mHfZvMt8gk8DUBIuFHV8gfCFR40-NUnU5mRe0F6BpY-tjcG1tWpyzoQtz0yqagn_Sw-KbMCYSHA");'></div>
+</div>
+<!-- AI Message -->
+<div class="flex items-end gap-3 max-w-[70%]">
+<div class="bg-primary/10 rounded-full w-10 h-10 shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">robot_2</span>
+</div>
+<div class="flex flex-col gap-1 items-start">
+<div class="flex items-center gap-2 mb-1">
+<p class="text-xs font-bold text-primary uppercase">Sales AI</p>
+<span class="text-[10px] text-[#4c4d9a] dark:text-[#9394d1]">10:26 AM</span>
+</div>
+<div class="text-sm font-normal leading-relaxed rounded-2xl rounded-bl-none px-5 py-4 bg-[#f0f0f5] dark:bg-[#252644] text-[#0d0e1b] dark:text-[#f8f8fc]">
+<p class="mb-3">That sounds like an exciting project. For 500+ nodes, we typically offer our <b>Platinum Tier</b> which includes:</p>
+<ul class="list-disc pl-5 space-y-1 mb-3">
+<li>24/7 Dedicated Support</li>
+<li>Custom LLM Fine-tuning</li>
+<li>On-premise Deployment options</li>
+</ul>
+<p>Would you like me to generate a preliminary PDF quote based on these specs?</p>
+</div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-center gap-3 max-w-[70%]">
+<div class="bg-primary/10 rounded-full w-8 h-8 shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[16px]">robot_2</span>
+</div>
+<div class="bg-[#f0f0f5] dark:bg-[#252644] px-4 py-2 rounded-full flex gap-1 items-center">
+<div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce"></div>
+<div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+<div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-6 border-t border-[#e7e7f3] dark:border-[#2d2e4a] bg-white dark:bg-[#101122]">
+<div class="max-w-4xl mx-auto">
+<div class="flex items-center gap-2 p-2 bg-[#f8f8fc] dark:bg-[#16172d] border border-[#e7e7f3] dark:border-[#2d2e4a] rounded-xl shadow-inner">
+<button class="p-2 text-[#4c4d9a] hover:bg-[#e7e7f3] dark:hover:bg-[#252644] rounded-lg transition-colors">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<button class="p-2 text-[#4c4d9a] hover:bg-[#e7e7f3] dark:hover:bg-[#252644] rounded-lg transition-colors">
+<span class="material-symbols-outlined">sentiment_satisfied</span>
+</button>
+<input id="chat-input" class="flex-1 bg-transparent border-none focus:ring-0 text-sm text-[#0d0e1b] dark:text-[#f8f8fc] placeholder-[#4c4d9a]/50" placeholder="Type a message or ask for a quote..." type="text"/>
+<button id="send-btn" class="bg-primary text-white p-2.5 rounded-lg flex items-center justify-center hover:bg-primary/90 transition-all shadow-md shadow-primary/30">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="flex justify-center gap-6 mt-3">
+<button class="text-[11px] font-bold text-primary/70 hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">description</span>
+                        GENERATE PROPOSAL
+                    </button>
+<button class="text-[11px] font-bold text-[#4c4d9a] hover:text-[#0d0e1b] dark:text-[#9394d1] dark:hover:text-white transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                        SCHEDULE DEMO
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+<!-- API Script -->
+
+<script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    // Check authentication
+    if (!localStorage.getItem('crm_token')) {
+        window.location.href = '/login';
+    }
+
+    // Load user info
+    const user = JSON.parse(localStorage.getItem('crm_user') || '{}');
+    document.getElementById('user-name').textContent = user.name || 'User';
+    document.getElementById('user-role').textContent = user.role || 'Representative';
+
+    // Logout handler
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('crm_token');
+        localStorage.removeItem('crm_user');
+        window.location.href = '/login';
+    });
+
+    let sessionId = null;
+    let currentMode = 'sales';
+
+    // Mode labels
+    const modeLabels = {
+        'service': 'Service AI',
+        'sales': 'Sales AI',
+        'consulting': 'Consulting AI'
+    };
+
+    // Create message HTML
+    function createAIMessage(content, time) {
+        return `
+            <div class="flex items-end gap-3 max-w-[70%]">
+                <div class="bg-primary/10 rounded-full w-10 h-10 shrink-0 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">robot_2</span>
+                </div>
+                <div class="flex flex-col gap-1 items-start">
+                    <div class="flex items-center gap-2 mb-1">
+                        <p class="text-xs font-bold text-primary uppercase">${modeLabels[currentMode]}</p>
+                        <span class="text-[10px] text-[#4c4d9a] dark:text-[#9394d1]">${time}</span>
+                    </div>
+                    <div class="text-sm font-normal leading-relaxed rounded-2xl rounded-bl-none px-5 py-3 bg-[#f0f0f5] dark:bg-[#252644] text-[#0d0e1b] dark:text-[#f8f8fc]">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function createUserMessage(content, time) {
+        return `
+            <div class="flex items-end gap-3 justify-end self-end max-w-[70%]">
+                <div class="flex flex-col gap-1 items-end">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] text-[#4c4d9a] dark:text-[#9394d1]">${time}</span>
+                        <p class="text-xs font-bold text-[#4c4d9a] dark:text-[#9394d1] uppercase">You</p>
+                    </div>
+                    <p class="text-sm font-normal leading-relaxed rounded-2xl rounded-br-none px-5 py-3 bg-primary text-white shadow-lg shadow-primary/20">
+                        ${content}
+                    </p>
+                </div>
+                <div class="bg-primary/20 rounded-full w-10 h-10 shrink-0 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">person</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function createTypingIndicator() {
+        return `
+            <div id="typing-indicator" class="flex items-center gap-3 max-w-[70%]">
+                <div class="bg-primary/10 rounded-full w-8 h-8 shrink-0 flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined text-[16px]">robot_2</span>
+                </div>
+                <div class="bg-[#f0f0f5] dark:bg-[#252644] px-4 py-2 rounded-full flex gap-1 items-center">
+                    <div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce"></div>
+                    <div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                    <div class="size-1.5 bg-[#4c4d9a] rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    function formatTime(date) {
+        return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    // Initialize chat session
+    async function initSession() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const response = await fetch(`${API_BASE}/chat/session`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    visitor_name: user.name || 'User',
+                    visitor_email: user.email || ''
+                })
+            });
+
+            if (!response.ok) throw new Error('Failed to create session');
+
+            const data = await response.json();
+            sessionId = data.session_id;
+
+            // Set initial mode
+            await changeMode(currentMode);
+
+            // Clear initial content and show welcome
+            const feed = document.getElementById('message-feed');
+            feed.innerHTML = createAIMessage(
+                `Hello! I'm currently in <b>${modeLabels[currentMode]}</b> mode. How can I help you today?`,
+                formatTime(new Date())
+            );
+
+        } catch (error) {
+            console.error('Error creating session:', error);
+            document.getElementById('message-feed').innerHTML =
+                '<div class="text-center text-[#4c4d9a] p-4">Failed to connect to chat. Please refresh the page.</div>';
+        }
+    }
+
+    // Change chat mode
+    async function changeMode(mode) {
+        currentMode = mode;
+
+        if (!sessionId) return;
+
+        try {
+            const token = localStorage.getItem('crm_token');
+            await fetch(`${API_BASE}/chat/session/${sessionId}/mode`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mode })
+            });
+
+            // Add mode change message
+            const feed = document.getElementById('message-feed');
+            feed.innerHTML += createAIMessage(
+                `Switching to <b>${modeLabels[mode]}</b> mode. How can I assist you?`,
+                formatTime(new Date())
+            );
+            feed.scrollTop = feed.scrollHeight;
+
+        } catch (error) {
+            console.error('Error changing mode:', error);
+        }
+    }
+
+    // Send message
+    async function sendMessage(content) {
+        if (!content.trim() || !sessionId) return;
+
+        const feed = document.getElementById('message-feed');
+        const time = formatTime(new Date());
+
+        // Add user message
+        feed.innerHTML += createUserMessage(content, time);
+
+        // Show typing indicator
+        feed.innerHTML += createTypingIndicator();
+        feed.scrollTop = feed.scrollHeight;
+
+        try {
+            const token = localStorage.getItem('crm_token');
+            const response = await fetch(`${API_BASE}/chat/message`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    session_id: sessionId,
+                    content: content
+                })
+            });
+
+            // Remove typing indicator
+            document.getElementById('typing-indicator')?.remove();
+
+            if (!response.ok) throw new Error('Failed to send message');
+
+            const data = await response.json();
+
+            // Add AI response
+            feed.innerHTML += createAIMessage(data.ai_response || 'I apologize, but I encountered an error. Please try again.', formatTime(new Date()));
+            feed.scrollTop = feed.scrollHeight;
+
+        } catch (error) {
+            console.error('Error sending message:', error);
+            document.getElementById('typing-indicator')?.remove();
+            feed.innerHTML += createAIMessage('Sorry, I encountered an error processing your request. Please try again.', formatTime(new Date()));
+            feed.scrollTop = feed.scrollHeight;
+        }
+    }
+
+    // Mode selector handlers
+    document.querySelectorAll('input[name="mode-selector"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            changeMode(e.target.value);
+        });
+    });
+
+    // Send message handlers
+    document.getElementById('send-btn').addEventListener('click', () => {
+        const input = document.getElementById('chat-input');
+        sendMessage(input.value);
+        input.value = '';
+    });
+
+    document.getElementById('chat-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage(e.target.value);
+            e.target.value = '';
+        }
+    });
+
+    // Initialize
+    initSession();
+</script>
+</body></html>

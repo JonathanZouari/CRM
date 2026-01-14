@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lead Details &amp; AI Scoring - Smart CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6467f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101122",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d0e1b] dark:text-[#f8f8fc] min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-white dark:bg-background-dark border-b border-[#e7e7f3] dark:border-white/10 px-4 md:px-10 lg:px-40 py-3 flex items-center justify-between whitespace-nowrap">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">auto_awesome</span>
+</div>
+<h2 class="text-[#0d0e1b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Smart CRM</h2>
+</div>
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-[#4c4d9a] dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="/dashboard">Dashboard</a>
+<a class="text-primary text-sm font-semibold leading-normal" href="/leads">Leads</a>
+<a class="text-[#4c4d9a] dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="/pipeline">Deals</a>
+<a class="text-[#4c4d9a] dark:text-gray-400 text-sm font-medium leading-normal hover:text-primary transition-colors" href="/chat">AI Chat</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<label class="hidden sm:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-[#e7e7f3] dark:bg-white/5">
+<div class="text-[#4c4d9a] flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input w-full border-none bg-transparent focus:ring-0 text-sm placeholder:text-[#4c4d9a]" placeholder="Search leads..."/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User avatar placeholder" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDKPRQaMuLlXnukmsDUuEiI3_gr31aFR9BDQb-sYx71_rmYGf75xf1t1C-hpDkJxV-OIjFZ-9Epx0wN6oPkLnJBddxZ-j8pwzBZT7arqLPN9WOFeP1l8GnaH6P5HKVUHcEz-LqsVSowGEw9TGvlmynL6YJpxTeSRGG2HGd5UVuF_-3gDz_CVUx0a_K8Gl-KkkQx9F1FZbjztEjOxrkS44PcnobhTwVb_VVLVTqg2jLH3xiZ5vaYn3hctGNCCgcKmB3WLrHSA7_in0Dw");'></div>
+</div>
+</header>
+<main class="px-4 md:px-10 lg:px-40 py-8 max-w-[1440px] mx-auto">
+<!-- Breadcrumbs -->
+<nav class="flex flex-wrap gap-2 mb-4 items-center">
+<a class="text-[#4c4d9a] dark:text-gray-400 text-sm font-medium hover:text-primary transition-colors" href="/leads">Leads</a>
+<span class="text-[#4c4d9a] dark:text-gray-600">/</span>
+<span id="breadcrumb-name" class="text-[#0d0e1b] dark:text-white text-sm font-medium">Loading...</span>
+</nav>
+<!-- Page Heading & Actions -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+<div class="flex items-center gap-5">
+<div class="size-16 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-4xl">corporate_fare</span>
+</div>
+<div>
+<h1 id="lead-name" class="text-[#0d0e1b] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Loading...</h1>
+<p id="lead-subtitle" class="text-[#4c4d9a] dark:text-gray-400 text-lg font-normal">Loading...</p>
+</div>
+</div>
+<div class="flex gap-3 flex-wrap">
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#e7e7f3] dark:bg-white/10 text-[#0d0e1b] dark:text-white text-sm font-bold hover:bg-[#d9d9e8] transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">edit</span>
+<span>Edit Lead</span>
+</button>
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-[#e7e7f3] dark:bg-white/10 text-[#0d0e1b] dark:text-white text-sm font-bold hover:bg-[#d9d9e8] transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">history_edu</span>
+<span>Log Interaction</span>
+</button>
+<button class="flex min-w-[140px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold shadow-lg shadow-primary/30 hover:brightness-110 transition-all">
+<span class="material-symbols-outlined mr-2 text-lg">add_chart</span>
+<span>Create Deal</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Left Side: Main Content -->
+<div class="lg:col-span-2 flex flex-col gap-8">
+<!-- AI Scoring Card -->
+<div class="bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-xl overflow-hidden shadow-sm">
+<div class="p-6 md:p-8 flex flex-col md:flex-row gap-8 items-center">
+<div class="relative size-40 shrink-0">
+<svg class="size-full -rotate-90" viewbox="0 0 100 100">
+<circle class="text-[#e7e7f3] dark:text-white/5" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-width="8"></circle>
+<circle class="text-primary" cx="50" cy="50" fill="transparent" r="42" stroke="currentColor" stroke-dasharray="263.89" stroke-dashoffset="39.58" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span id="lead-score" class="text-4xl font-black text-primary">--</span>
+<span class="text-[#4c4d9a] dark:text-gray-400 text-xs font-bold uppercase tracking-widest">/ 100</span>
+</div>
+</div>
+<div class="flex-1 text-center md:text-right" dir="rtl">
+<h3 class="text-[#0d0e1b] dark:text-white text-xl font-bold mb-3 flex items-center justify-end gap-2">
+<span class="material-symbols-outlined text-primary">psychology</span>
+                                ניתוח בינה מלאכותית
+                            </h3>
+<p id="ai-explanation" class="text-[#4c4d9a] dark:text-gray-300 text-lg leading-relaxed mb-4">
+                                טוען ניתוח AI...
+                            </p>
+<div id="ai-tags" class="flex flex-wrap gap-2 justify-end">
+<!-- Tags will be populated dynamically -->
+</div>
+</div>
+</div>
+</div>
+<!-- Tabs & Content -->
+<div class="flex flex-col gap-6">
+<div class="flex border-b border-[#e7e7f3] dark:border-white/10 overflow-x-auto">
+<button class="px-6 py-4 text-primary border-b-2 border-primary font-bold text-sm whitespace-nowrap">Interaction Timeline</button>
+<button class="px-6 py-4 text-[#4c4d9a] dark:text-gray-400 font-medium text-sm whitespace-nowrap hover:text-primary transition-colors">Related Deals (2)</button>
+<button class="px-6 py-4 text-[#4c4d9a] dark:text-gray-400 font-medium text-sm whitespace-nowrap hover:text-primary transition-colors">Notes &amp; Files</button>
+</div>
+<!-- Interaction Timeline Feed -->
+<div id="interaction-timeline" class="flex flex-col gap-4">
+<!-- Timeline Item 1 -->
+<div class="group relative flex gap-4 p-4 bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-lg hover:border-primary/30 transition-all">
+<div class="absolute left-7 top-14 bottom-0 w-px bg-[#e7e7f3] dark:bg-white/10 group-last:hidden"></div>
+<div class="size-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xl">call</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-[#0d0e1b] dark:text-white font-bold">Outgoing Call - Follow up</h4>
+<span class="text-[#4c4d9a] dark:text-gray-500 text-xs">Today, 10:45 AM</span>
+</div>
+<p class="text-[#4c4d9a] dark:text-gray-400 text-sm mb-3">Discussed the pricing model for the Enterprise tier. Jonathan requested a sandbox environment for his DevOps lead to test the API limits.</p>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 rounded text-[10px] font-bold uppercase tracking-wider">12 mins</span>
+<span class="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-[10px] font-bold uppercase tracking-wider">Positive Outcome</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="group relative flex gap-4 p-4 bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-lg hover:border-primary/30 transition-all">
+<div class="absolute left-7 top-14 bottom-0 w-px bg-[#e7e7f3] dark:bg-white/10 group-last:hidden"></div>
+<div class="size-10 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-[#0d0e1b] dark:text-white font-bold">Email Received: Technical Specs</h4>
+<span class="text-[#4c4d9a] dark:text-gray-500 text-xs">Yesterday, 4:12 PM</span>
+</div>
+<p class="text-[#4c4d9a] dark:text-gray-400 text-sm italic">"Please find the attached document detailing our current stack. We need the AI scoring engine to integrate via Webhooks."</p>
+<div class="mt-2 flex items-center gap-2 text-primary text-xs font-bold cursor-pointer hover:underline">
+<span class="material-symbols-outlined text-sm">attach_file</span>
+                                    infrastructure_v2.pdf
+                                </div>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="group relative flex gap-4 p-4 bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-lg hover:border-primary/30 transition-all">
+<div class="size-10 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-xl">groups</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="text-[#0d0e1b] dark:text-white font-bold">Initial Demo Meeting</h4>
+<span class="text-[#4c4d9a] dark:text-gray-500 text-xs">Oct 24, 2:00 PM</span>
+</div>
+<p class="text-[#4c4d9a] dark:text-gray-400 text-sm">Full team demo. Stakeholders showed strong interest in the AI-assisted lead prioritization module.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Contact Info & Stats -->
+<div class="flex flex-col gap-8">
+<!-- Info Section -->
+<div class="bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-xl p-6 shadow-sm">
+<h3 class="text-[#0d0e1b] dark:text-white font-bold mb-6 flex items-center justify-between">
+                        Contact Details
+                        <button class="text-primary text-xs font-bold hover:underline">EDIT</button>
+</h3>
+<div id="contact-details" class="flex flex-col gap-5">
+<div class="flex items-start gap-4">
+<div class="text-[#4c4d9a] dark:text-gray-500 mt-1">
+<span class="material-symbols-outlined text-xl">mail</span>
+</div>
+<div>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-500 font-bold uppercase tracking-wider">Email Address</p>
+<p id="contact-email" class="text-sm font-medium text-[#0d0e1b] dark:text-white">--</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="text-[#4c4d9a] dark:text-gray-500 mt-1">
+<span class="material-symbols-outlined text-xl">phone_iphone</span>
+</div>
+<div>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-500 font-bold uppercase tracking-wider">Mobile Phone</p>
+<p id="contact-phone" class="text-sm font-medium text-[#0d0e1b] dark:text-white">--</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="text-[#4c4d9a] dark:text-gray-500 mt-1">
+<span class="material-symbols-outlined text-xl">location_on</span>
+</div>
+<div>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-500 font-bold uppercase tracking-wider">Company</p>
+<p id="contact-company" class="text-sm font-medium text-[#0d0e1b] dark:text-white">--</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="text-[#4c4d9a] dark:text-gray-500 mt-1">
+<span class="material-symbols-outlined text-xl">attach_money</span>
+</div>
+<div>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-500 font-bold uppercase tracking-wider">Budget</p>
+<p id="contact-budget" class="text-sm font-medium text-primary">--</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Metrics Section -->
+<div class="bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl p-6">
+<h3 class="text-[#0d0e1b] dark:text-white font-bold mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                        Lead Health
+                    </h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-background-dark p-3 rounded-lg border border-[#e7e7f3] dark:border-white/5">
+<p class="text-[10px] text-[#4c4d9a] dark:text-gray-500 font-black uppercase mb-1">Interactions</p>
+<p id="stat-interactions" class="text-2xl font-black text-[#0d0e1b] dark:text-white">--</p>
+</div>
+<div class="bg-white dark:bg-background-dark p-3 rounded-lg border border-[#e7e7f3] dark:border-white/5">
+<p class="text-[10px] text-[#4c4d9a] dark:text-gray-500 font-black uppercase mb-1">Source</p>
+<p id="stat-source" class="text-2xl font-black text-[#0d0e1b] dark:text-white">--</p>
+</div>
+</div>
+<div class="mt-4 bg-white dark:bg-background-dark p-3 rounded-lg border border-[#e7e7f3] dark:border-white/5">
+<p class="text-[10px] text-[#4c4d9a] dark:text-gray-500 font-black uppercase mb-2">Deal Velocity</p>
+<div class="w-full bg-[#e7e7f3] dark:bg-white/10 h-2 rounded-full overflow-hidden">
+<div class="bg-green-500 h-full w-[72%]"></div>
+</div>
+<p class="text-[11px] text-[#4c4d9a] dark:text-gray-400 mt-2 font-medium">Above average for AI sector</p>
+</div>
+</div>
+<!-- Recent Tags Section -->
+<div class="bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-xl p-6">
+<h3 class="text-[#0d0e1b] dark:text-white font-bold mb-4">Focus Areas</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-[#f8f8fc] dark:bg-white/5 text-[#4c4d9a] dark:text-gray-300 rounded text-xs font-semibold">LLM Fine-tuning</span>
+<span class="px-3 py-1.5 bg-[#f8f8fc] dark:bg-white/5 text-[#4c4d9a] dark:text-gray-300 rounded text-xs font-semibold">Workflow Automation</span>
+<span class="px-3 py-1.5 bg-[#f8f8fc] dark:bg-white/5 text-[#4c4d9a] dark:text-gray-300 rounded text-xs font-semibold">Scaleup</span>
+<span class="px-3 py-1.5 bg-[#f8f8fc] dark:bg-white/5 text-[#4c4d9a] dark:text-gray-300 rounded text-xs font-semibold">API Integration</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Map Visualization Section (Implicit in many CRMs for context) -->
+<div class="px-4 md:px-10 lg:px-40 pb-20 max-w-[1440px] mx-auto">
+<div class="w-full h-48 rounded-xl overflow-hidden grayscale opacity-50 contrast-125 dark:opacity-20 mt-8 relative border border-[#e7e7f3] dark:border-white/10">
+<div class="absolute inset-0 bg-primary/10 mix-blend-multiply"></div>
+<img class="w-full h-full object-cover" data-alt="Stylized map showing business headquarters" data-location="Tel Aviv" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsdW20op1GbPk2E6xDJ0QPDqnxIKM_0KH87X2HrWToaxoB8OjpN_RiCPBUXYqxhpR7zp2ldZqWynusitW853VSY2Utv6cGIOOGldWFsWRh2YIslTLdNQE5oAoFVCkD3vvyJIuZVBZpPKp6T4kYiUjxWU5u8TFkvmuRz6ozXnyWE4DDbgTLsyo1HdG5ErloCbXXzNQa3Uj9POgRa195PB3n9pvdVYwZyC6Uzk4dUD2VXCgjq5Qw3srEcWRmnpDWzgGQ_UVJSR_Lydbf"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-white dark:bg-background-dark px-4 py-2 rounded-full shadow-lg border border-[#e7e7f3] dark:border-white/10 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">location_on</span>
+<span class="text-xs font-bold dark:text-white tracking-wide">TechFlow AI HQ - Rothschild Blvd</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- API Script -->
+
+<script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    // Check authentication
+    if (!localStorage.getItem('crm_token')) {
+        window.location.href = '/login';
+    }
+
+    // Get lead ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const leadId = urlParams.get('id');
+
+    if (!leadId) {
+        alert('No lead ID provided');
+        window.location.href = '../lead_management_list/code.html';
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+        if (!amount) return '$0';
+        return '$' + parseInt(amount).toLocaleString();
+    }
+
+    // Format date
+    function formatDate(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Get status badge class
+    function getStatusClass(status) {
+        const classes = {
+            'new': 'bg-primary/10 text-primary',
+            'contacted': 'bg-gray-100 text-gray-700',
+            'qualified': 'bg-blue-100 text-blue-700',
+            'proposal': 'bg-purple-100 text-purple-700',
+            'won': 'bg-green-100 text-green-700',
+            'lost': 'bg-red-100 text-red-700'
+        };
+        return classes[status] || classes['new'];
+    }
+
+    // Render interaction timeline
+    function renderInteractions(interactions) {
+        const container = document.getElementById('interaction-timeline');
+
+        if (!interactions || interactions.length === 0) {
+            container.innerHTML = '<div class="p-4 text-center text-[#4c4d9a]">No interactions yet</div>';
+            return;
+        }
+
+        const icons = {
+            'call': { icon: 'call', bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400' },
+            'email': { icon: 'mail', bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600 dark:text-purple-400' },
+            'meeting': { icon: 'groups', bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400' },
+            'note': { icon: 'note', bg: 'bg-gray-100 dark:bg-gray-900/30', text: 'text-gray-600 dark:text-gray-400' }
+        };
+
+        container.innerHTML = interactions.map((interaction, index) => {
+            const type = icons[interaction.type] || icons['note'];
+            const isLast = index === interactions.length - 1;
+
+            return `
+                <div class="group relative flex gap-4 p-4 bg-white dark:bg-background-dark/50 border border-[#e7e7f3] dark:border-white/10 rounded-lg hover:border-primary/30 transition-all">
+                    ${!isLast ? '<div class="absolute left-7 top-14 bottom-0 w-px bg-[#e7e7f3] dark:bg-white/10"></div>' : ''}
+                    <div class="size-10 rounded-full ${type.bg} ${type.text} flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-xl">${type.icon}</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h4 class="text-[#0d0e1b] dark:text-white font-bold">${interaction.type.charAt(0).toUpperCase() + interaction.type.slice(1)}</h4>
+                            <span class="text-[#4c4d9a] dark:text-gray-500 text-xs">${formatDate(interaction.created_at)}</span>
+                        </div>
+                        <p class="text-[#4c4d9a] dark:text-gray-400 text-sm">${interaction.notes || 'No notes'}</p>
+                        ${interaction.outcome ? `
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-[10px] font-bold uppercase tracking-wider">${interaction.outcome}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Update score circle SVG
+    function updateScoreCircle(score) {
+        const circle = document.querySelector('circle.text-primary');
+        if (circle) {
+            const circumference = 2 * Math.PI * 42; // radius = 42
+            const offset = circumference - (score / 100) * circumference;
+            circle.setAttribute('stroke-dasharray', circumference.toFixed(2));
+            circle.setAttribute('stroke-dashoffset', offset.toFixed(2));
+        }
+    }
+
+    // Load lead data
+    async function loadLead() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+
+            // Fetch lead data
+            const leadRes = await fetch(`${API_BASE}/leads/${leadId}`, { headers });
+            if (!leadRes.ok) throw new Error('Failed to load lead');
+            const lead = await leadRes.json();
+
+            // Update breadcrumb
+            document.getElementById('breadcrumb-name').textContent = lead.contact_name || lead.company_name || 'Lead';
+
+            // Update header
+            document.getElementById('lead-name').textContent = lead.contact_name || 'Unknown';
+            const statusBadge = `<span class="text-primary font-semibold">${(lead.status || 'New').charAt(0).toUpperCase() + (lead.status || 'new').slice(1)} Lead</span>`;
+            document.getElementById('lead-subtitle').innerHTML = `${lead.job_title || 'Contact'} at ${lead.company_name || 'N/A'} | ${statusBadge}`;
+
+            // Update score
+            const score = lead.lead_score || 0;
+            document.getElementById('lead-score').textContent = score;
+            updateScoreCircle(score);
+
+            // Update AI explanation
+            const explanation = lead.lead_score_explanation || 'ממתין לניתוח AI. לחץ על "חשב ציון" כדי ליצור ניתוח.';
+            document.getElementById('ai-explanation').textContent = explanation;
+
+            // Update AI tags
+            const tagsContainer = document.getElementById('ai-tags');
+            const tags = [];
+            if (score >= 70) tags.push({ text: 'ציון גבוה', class: 'bg-green-100 text-green-700' });
+            if (lead.budget >= 50000) tags.push({ text: 'תקציב גבוה', class: 'bg-blue-100 text-blue-700' });
+            if (lead.source === 'referral') tags.push({ text: 'הפניה', class: 'bg-primary/10 text-primary' });
+            if (lead.interest_level === 'high') tags.push({ text: 'עניין גבוה', class: 'bg-purple-100 text-purple-700' });
+
+            tagsContainer.innerHTML = tags.map(tag =>
+                `<span class="px-3 py-1 ${tag.class} rounded-full text-xs font-bold">${tag.text}</span>`
+            ).join('');
+
+            // Update contact details
+            document.getElementById('contact-email').textContent = lead.email || 'N/A';
+            document.getElementById('contact-phone').textContent = lead.phone || 'N/A';
+            document.getElementById('contact-company').textContent = lead.company_name || 'N/A';
+            document.getElementById('contact-budget').textContent = formatCurrency(lead.budget);
+
+            // Update metrics
+            document.getElementById('stat-source').textContent = (lead.source || 'N/A').charAt(0).toUpperCase() + (lead.source || '').slice(1);
+
+            // Load interactions
+            loadInteractions(headers);
+
+        } catch (error) {
+            console.error('Error loading lead:', error);
+            alert('Failed to load lead data');
+            window.location.href = '../lead_management_list/code.html';
+        }
+    }
+
+    async function loadInteractions(headers) {
+        try {
+            const interactionsRes = await fetch(`${API_BASE}/leads/${leadId}/interactions`, { headers });
+            if (!interactionsRes.ok) return;
+            const interactions = await interactionsRes.json();
+
+            renderInteractions(interactions);
+            document.getElementById('stat-interactions').textContent = interactions.length;
+
+        } catch (error) {
+            console.error('Error loading interactions:', error);
+        }
+    }
+
+    // Recalculate AI score
+    async function recalculateScore() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const res = await fetch(`${API_BASE}/leads/${leadId}/score`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!res.ok) throw new Error('Failed to recalculate score');
+
+            // Reload the page data
+            loadLead();
+
+        } catch (error) {
+            console.error('Error recalculating score:', error);
+            alert('Failed to recalculate score. Please try again.');
+        }
+    }
+
+    // Initialize
+    loadLead();
+</script>
+</body></html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sales Pipeline Kanban - Smart CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#6467f2",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101122",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .kanban-column {
+            min-width: 320px;
+            max-width: 320px;
+        }
+        /* Custom scrollbar for the kanban board */
+        .kanban-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .kanban-container::-webkit-scrollbar-track {
+            background: #e7e7f3;
+            border-radius: 10px;
+        }
+        .kanban-container::-webkit-scrollbar-thumb {
+            background: #cfd0e7;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#0d0e1b] dark:text-white">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex flex-col border-r border-[#e7e7f3] dark:border-white/10 bg-background-light dark:bg-background-dark p-4 shrink-0">
+<div class="flex items-center gap-3 mb-8 px-2">
+<div class="bg-primary size-10 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-[#0d0e1b] dark:text-white text-base font-bold leading-none">Smart CRM</h1>
+<p class="text-[#4c4d9a] dark:text-gray-400 text-xs font-normal mt-1">AI Implementation</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1 flex-grow">
+<a class="flex items-center gap-3 px-3 py-2 text-[#4c4d9a] dark:text-gray-400 hover:bg-[#e7e7f3] dark:hover:bg-white/5 rounded-lg transition-colors" href="/dashboard">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg transition-colors" href="/pipeline">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">view_kanban</span>
+<span class="text-sm font-semibold">Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#4c4d9a] dark:text-gray-400 hover:bg-[#e7e7f3] dark:hover:bg-white/5 rounded-lg transition-colors" href="/leads">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Leads</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#4c4d9a] dark:text-gray-400 hover:bg-[#e7e7f3] dark:hover:bg-white/5 rounded-lg transition-colors" href="/chat">
+<span class="material-symbols-outlined">chat</span>
+<span class="text-sm font-medium">AI Chat</span>
+</a>
+<div class="mt-auto pt-4 border-t border-[#e7e7f3] dark:border-white/10">
+<div id="logout-btn" class="flex items-center gap-3 px-3 py-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors cursor-pointer">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Logout</span>
+</div>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col min-w-0">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between px-8 py-4 bg-background-light dark:bg-background-dark border-b border-[#e7e7f3] dark:border-white/10">
+<div class="flex items-center gap-8">
+<h2 class="text-xl font-bold text-[#0d0e1b] dark:text-white">Sales Pipeline</h2>
+<!-- View Toggle -->
+<div class="flex h-9 items-center rounded-lg bg-[#e7e7f3] dark:bg-white/5 p-1 w-64">
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-md px-2 bg-white dark:bg-white/10 shadow-sm text-primary text-xs font-semibold">
+<span class="truncate">Pipeline View</span>
+<input checked="" class="hidden" name="view-mode" type="radio" value="pipeline"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-md px-2 text-[#4c4d9a] dark:text-gray-400 text-xs font-medium hover:text-primary transition-colors">
+<span class="truncate">List View</span>
+<input class="hidden" name="view-mode" type="radio" value="list"/>
+</label>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#4c4d9a] text-lg">search</span>
+<input id="search-deals" class="w-full bg-[#e7e7f3] dark:bg-white/5 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 text-[#0d0e1b] dark:text-white placeholder:text-[#4c4d9a]" placeholder="Search deals..."/>
+</div>
+<button id="create-deal-btn" class="flex items-center justify-center bg-primary hover:bg-primary/90 text-white rounded-lg h-10 px-4 gap-2 text-sm font-bold transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">add</span>
+<span>Create Deal</span>
+</button>
+<div class="flex gap-2">
+<button class="flex items-center justify-center bg-[#e7e7f3] dark:bg-white/5 text-[#0d0e1b] dark:text-white rounded-lg size-10 hover:bg-[#cfd0e7] transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex items-center justify-center bg-[#e7e7f3] dark:bg-white/5 text-[#0d0e1b] dark:text-white rounded-lg size-10 overflow-hidden border-2 border-transparent hover:border-primary transition-all">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional male avatar headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBao7LX2dyuzTblXG271Hc6jm4yyL5bz8moqDsoLJJfcu79zgsHBKjjco8aoMs4Y3LFEuDodJ-9Ti8eQc1knWssXMJhWggnGxrwRGzLawNJxkDQB7jShJDrY3sSPXb-21Fyuy9xycY61CxlDM3fuUGPVJ6kK87myFpBLqqQYoJ10GEP6-bS4xvR8WA9kFmCgp0a8GeDYtw_4gwF6rGpgoTXQXQFMLgFmdv2V9ZTgZ8_2KNWTF9d-r8c0XeGGr3bWq5Qu5B9TTu6Xs-W"/>
+</button>
+</div>
+</div>
+</header>
+<!-- Kanban Board -->
+<div class="flex-grow overflow-x-auto overflow-y-hidden kanban-container bg-[#f8f8fc] dark:bg-background-dark/50">
+<div id="kanban-board" class="flex h-full p-6 gap-6">
+<!-- Column: Discovery -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-[#0d0e1b] dark:text-white">Discovery</h3>
+<span class="bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a] dark:text-gray-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">3</span>
+</div>
+<span class="text-xs font-semibold text-[#4c4d9a]">₪245,000</span>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">High Priority</span>
+<span class="text-[11px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 rounded">60%</span>
+</div>
+<h4 class="font-bold text-sm mb-1 line-clamp-2">Enterprise LLM Deployment</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">GlobalTech Systems</p>
+<div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3 mt-auto">
+<span class="text-sm font-bold">₪120,000</span>
+<img class="size-6 rounded-full ring-2 ring-white dark:ring-background-dark" data-alt="assigned representative avatar sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPm0epSd6eRZ0SPGXSifF0pFH6LK3HjH2kp79pDeQUtU1z6OGziPbRRhHG5dokBMsS6kTdNhRyZuBg19bkd2tsz7h4flRFLTideqqql8ciHRMwqe-xAmWAscsUmL2QhkmCIzuFQYiqjaSMAz6Ssg_nujZU6-o1F8c6R8u6a0fxds2t-TaJaYSLoGDI2kXVKRZiKIVHCVm2YE36jr0bPTS7O9LRj-pTvg_KpEfZM1DkDDdLSzX1jRtyBIQx58aAArRV-M35KUm0ljHU"/>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-[#4c4d9a] bg-[#e7e7f3] dark:bg-white/10 px-2 py-0.5 rounded">Medium</span>
+<span class="text-[11px] font-bold text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 rounded">30%</span>
+</div>
+<h4 class="font-bold text-sm mb-1">Customer Support Automation</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">RetailCorp Middle East</p>
+<div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3">
+<span class="text-sm font-bold">₪45,000</span>
+<img class="size-6 rounded-full ring-2 ring-white dark:ring-background-dark" data-alt="assigned representative avatar james" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2QBi1BYo0xsDjkvUAZ83UaDi-xlB1DmMAzVsMijaYFMkyw5SRO9heKWUQrv41C-ZO0ARSbUBi-KvQLaTXRlNNSP13ekHrMGuZAcOxxjtkvxl6bDSytXLVbAuZrBkcOoz1829Jj5HON52-X-bh-ujqBACOPpOKw9sVoO7WBCkJcVdyCRKB3CL0KrjeM6NjKo9PEqu8jwJ5vhSjJAaY1Q64xgH08EjZcddJvhZmIGKPyG3HnCD9R0sI8rhksX8-SKRmEXEOvTk-XYq8"/>
+</div>
+</div>
+<!-- Drag indicator -->
+<div class="border-2 border-dashed border-primary/30 rounded-xl h-24 flex items-center justify-center bg-primary/5">
+<span class="text-xs text-primary/40 font-medium italic">Drop deal here</span>
+</div>
+</div>
+</div>
+<!-- Column: Proposal -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-[#0d0e1b] dark:text-white">Proposal</h3>
+<span class="bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a] dark:text-gray-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">1</span>
+</div>
+<span class="text-xs font-semibold text-[#4c4d9a]">₪310,000</span>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1">
+<div class="bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">Closing Soon</span>
+<span class="text-[11px] font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-1.5 rounded">75%</span>
+</div>
+<h4 class="font-bold text-sm mb-1">Logistics Route Optimization</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">Swift Shipments</p>
+<div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3">
+<span class="text-sm font-bold">₪310,000</span>
+<img class="size-6 rounded-full ring-2 ring-white dark:ring-background-dark" data-alt="assigned representative avatar mia" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2KEFPH_oyw5HKQz-Lgt99uEgVTnUzia8q-S8QeNqEPes6aIDkips2o4Nz-udJsD8UqcCV1OHhcDeqj_pLSlyDbodfn_y_CGF_PkSExE_ec9xmglOh6mU3jIQ7AXI5BCvy_fZjoQzuGlJ5ysWS6hCQqDV_FS6uhKDpbg3-seuuU58mXFekjCSgHYK6IE994YsYpgaFP-q8Y52kQYEFJSi40G7_LT-zlHkLsQv_6KBaaMXZH2_1cmaznsLCTIattz-iXAS-CAo4moqZ"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Negotiation -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-[#0d0e1b] dark:text-white">Negotiation</h3>
+<span class="bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a] dark:text-gray-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">2</span>
+</div>
+<span class="text-xs font-semibold text-[#4c4d9a]">₪185,000</span>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1">
+<div class="bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-[#4c4d9a] bg-[#e7e7f3] dark:bg-white/10 px-2 py-0.5 rounded">Medium</span>
+<span class="text-[11px] font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-1.5 rounded">50%</span>
+</div>
+<h4 class="font-bold text-sm mb-1">Financial Risk Analysis Tool</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">Capital Trust Bank</p>
+<div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3">
+<span class="text-sm font-bold">₪150,000</span>
+<img class="size-6 rounded-full ring-2 ring-white dark:ring-background-dark" data-alt="assigned representative avatar alex" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCQzqP2Ba1Fwz8QqcDOf4-ZAmV3kA4w7T6lv2o5FJq0D76HKsxtBQrc_Bzr0rvEzOESFwCqHlxGObn2OTkStzbiOLazziTqvuoKiCTfVwwHtO2xHUtjRf8nUCUewEaPdVZ-D4qmwJcfjMJu7gbHfj2SvRjEpb4jBdSIiaGf2ksoKcLzgW0MJFeEF4ZwHwdbEPSCQPCstdMG0Esc_x6VlUyjLTpux-j51YB0PB-uMitMctTDt7spOn7cy0S-5XTe4PlWFutIL_Cs11X"/>
+</div>
+</div>
+<div class="bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md transition-all cursor-grab">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-[#4c4d9a] bg-[#e7e7f3] dark:bg-white/10 px-2 py-0.5 rounded">Medium</span>
+<span class="text-[11px] font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/20 px-1.5 rounded">45%</span>
+</div>
+<h4 class="font-bold text-sm mb-1">Legal Document AI Parser</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">Lawson &amp; Partners</p>
+<div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3">
+<span class="text-sm font-bold">₪35,000</span>
+<img class="size-6 rounded-full ring-2 ring-white dark:ring-background-dark" data-alt="assigned representative avatar james" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDywdtwP7vNIW2vMZR0vnqLd5gewwDkrtcMsMgfCEHCZ52gr48e3VGczXG3Qb3KRnn0vRHZKC6acC68cjbJI8X9gYHpfglDmuOkawAXWMoG9lLyxh8z8yqFWDZ0KyuVXeV5S5lRQIyptw2lmsljcH7UUtUd0_EP0pRGIKgxsK-BLsSv19oG2FAwJcXVw4K5DV9bTCcHX-Ly2aTNYc09edJ7QbU1a2RiLa36RZEDHtrYgsnkj0f4PJ7unVw6OnKYgjMqOT5c5D9wFpCI"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Contract -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-[#0d0e1b] dark:text-white">Contract</h3>
+<span class="bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a] dark:text-gray-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">0</span>
+</div>
+<span class="text-xs font-semibold text-[#4c4d9a]">₪0</span>
+</div>
+<div class="flex flex-col gap-4 items-center justify-center h-48 border-2 border-dashed border-[#e7e7f3] dark:border-white/10 rounded-xl">
+<span class="material-symbols-outlined text-[#cfd0e7] text-4xl">pending_actions</span>
+<p class="text-xs text-[#cfd0e7] font-medium">No active contracts</p>
+</div>
+</div>
+<!-- Column: Won -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-green-600">Won</h3>
+<span class="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">4</span>
+</div>
+<span class="text-xs font-semibold text-green-600">₪1,240,000</span>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1 opacity-70">
+<div class="bg-white dark:bg-background-dark border border-green-200 dark:border-green-900/40 rounded-xl p-4 shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded">Success</span>
+<span class="text-[11px] font-bold text-green-600 px-1.5 rounded">100%</span>
+</div>
+<h4 class="font-bold text-sm mb-1 line-clamp-1">Custom GPT Implementation</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">MedTech Global</p>
+<div class="flex items-center justify-between border-t border-dashed border-green-100 dark:border-green-900/20 pt-3">
+<span class="text-sm font-bold">₪420,000</span>
+<img class="size-6 rounded-full" data-alt="assigned representative avatar sarah" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEBoedGFwqKt_XxCkV9u0dGXVjosGecIa2KNzfSLSCXJ9JnTT6K6IGAQoMpdvaHbQjXLsT7e9jQvYK_FgnPkWd5ccRv40ACPC8p7WKyqNxt-VtY2hRWyW-31fAPX1tnoWRk6q_nZOzt-9-merR4BwFj6hnTe45H4Ucq9rysI1C91Ca_Y32icLjzfbhmbCK_o740aOI6DM3eVNdsLzbY1TRg2KqsYYLPKX_WWBFiFvrfz4tTmKEdlCFI_3w9f0acXs7AXQRGiKeJdiE"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Lost -->
+<div class="kanban-column flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-2">
+<div class="flex items-center gap-2">
+<h3 class="font-bold text-sm text-red-600">Lost</h3>
+<span class="bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold">1</span>
+</div>
+<span class="text-xs font-semibold text-red-600">₪55,000</span>
+</div>
+<div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1 opacity-60">
+<div class="bg-white dark:bg-background-dark border border-red-100 dark:border-red-900/20 rounded-xl p-4 shadow-sm grayscale">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-wider font-bold text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded">Cancelled</span>
+<span class="text-[11px] font-bold text-red-600 px-1.5 rounded">0%</span>
+</div>
+<h4 class="font-bold text-sm mb-1">OCR Data Extraction</h4>
+<p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">Paperless Inc</p>
+<div class="flex items-center justify-between border-t border-dashed border-red-100 dark:border-red-900/20 pt-3">
+<span class="text-sm font-bold">₪55,000</span>
+<img class="size-6 rounded-full" data-alt="assigned representative avatar tom" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRwELYLNPDep4zGyZs4A6q0owGRbG2GoxmAMI0jS1ejW2xPZ-pzshYO0QBzJ8PppWOYQlVoMeLAso6JeHcTBOuRIkpAapJYJM9pE4VuvDl5LKtzRRLp1gbQo6Pt195sIam7mfgNO3aYCI8Tk23d5Mypbe0OX2-VOUvUWm3CHpGiqHDqNAZxbRgPxBg31NZsZWCn9im8Zp7Z6KKKuDX0CJ45ctsR1TbSvgiNqXhYZz9JAjMWi4qNCiTza6xU1bFpTIeM0TC19KXZVb6"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Stats Bar -->
+<footer class="bg-white dark:bg-background-dark border-t border-[#e7e7f3] dark:border-white/10 px-8 py-3 flex items-center justify-between shrink-0">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-[#4c4d9a] tracking-wider">Total Value</span>
+<span id="stat-total-value" class="text-sm font-bold">Loading...</span>
+</div>
+<div class="w-px h-8 bg-[#e7e7f3] dark:bg-white/10"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-[#4c4d9a] tracking-wider">Weighted Value</span>
+<span id="stat-weighted-value" class="text-sm font-bold text-primary">--</span>
+</div>
+<div class="w-px h-8 bg-[#e7e7f3] dark:bg-white/10"></div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase font-bold text-[#4c4d9a] tracking-wider">Active Deals</span>
+<span id="stat-active-deals" class="text-sm font-bold">--</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span id="last-updated" class="text-xs text-[#4c4d9a]">Loading...</span>
+<button id="refresh-btn" class="material-symbols-outlined text-lg text-[#4c4d9a] hover:text-primary transition-colors">refresh</button>
+</div>
+</footer>
+</main>
+</div>
+
+<!-- Create Deal Modal -->
+<div id="create-deal-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white dark:bg-background-dark rounded-xl p-6 w-full max-w-lg mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-[#0d0e1b] dark:text-white">Create New Deal</h3>
+            <button id="close-deal-modal" class="text-gray-400 hover:text-gray-600">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="create-deal-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Deal Title</label>
+                <input type="text" name="title" required class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Lead</label>
+                    <select name="lead_id" id="deal-lead-select" class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+                        <option value="">Select Lead</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Value ($)</label>
+                    <input type="number" name="value" required class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Stage</label>
+                    <select name="stage" class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+                        <option value="discovery">Discovery</option>
+                        <option value="proposal">Proposal</option>
+                        <option value="negotiation">Negotiation</option>
+                        <option value="contract">Contract</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Probability (%)</label>
+                    <input type="number" name="probability" min="0" max="100" value="30" class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-[#4c4d9a] dark:text-gray-400 mb-1">Expected Close Date</label>
+                <input type="date" name="expected_close_date" class="w-full px-3 py-2 rounded-lg border border-[#cfd0e7] dark:border-white/10 bg-white dark:bg-white/5 text-[#0d0e1b] dark:text-white focus:ring-2 focus:ring-primary/20 outline-none">
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" id="cancel-deal-modal" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/5 text-[#0d0e1b] dark:text-white font-medium hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors">Create Deal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- API Script -->
+
+<script>
+    const API_BASE = 'http://localhost:5000/api';
+
+    // Check authentication
+    if (!localStorage.getItem('crm_token')) {
+        window.location.href = '/login';
+    }
+
+    // Logout handler
+    document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('crm_token');
+        localStorage.removeItem('crm_user');
+        window.location.href = '/login';
+    });
+
+    const STAGES = ['discovery', 'proposal', 'negotiation', 'contract', 'won', 'lost'];
+    const STAGE_COLORS = {
+        discovery: { header: 'text-[#0d0e1b] dark:text-white', count: 'bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a]' },
+        proposal: { header: 'text-[#0d0e1b] dark:text-white', count: 'bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a]' },
+        negotiation: { header: 'text-[#0d0e1b] dark:text-white', count: 'bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a]' },
+        contract: { header: 'text-[#0d0e1b] dark:text-white', count: 'bg-[#e7e7f3] dark:bg-white/10 text-[#4c4d9a]' },
+        won: { header: 'text-green-600', count: 'bg-green-100 dark:bg-green-900/20 text-green-700' },
+        lost: { header: 'text-red-600', count: 'bg-red-100 dark:bg-red-900/20 text-red-700' }
+    };
+
+    function formatCurrency(amount) {
+        if (!amount) return '$0';
+        return '$' + parseInt(amount).toLocaleString();
+    }
+
+    function getProbabilityColor(prob) {
+        if (prob >= 70) return 'text-green-600 bg-green-50 dark:bg-green-900/20';
+        if (prob >= 40) return 'text-orange-600 bg-orange-50 dark:bg-orange-900/20';
+        return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20';
+    }
+
+    function renderDealCard(deal) {
+        const probColor = getProbabilityColor(deal.probability || 0);
+        const initials = (deal.title || 'D').slice(0, 2).toUpperCase();
+
+        return `
+            <div class="deal-card bg-white dark:bg-background-dark border border-[#e7e7f3] dark:border-white/10 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/50 transition-all cursor-grab active:cursor-grabbing" draggable="true" data-deal-id="${deal.id}" data-stage="${deal.stage}">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-[#4c4d9a] bg-[#e7e7f3] dark:bg-white/10 px-2 py-0.5 rounded">${deal.stage}</span>
+                    <span class="text-[11px] font-bold ${probColor} px-1.5 rounded">${deal.probability || 0}%</span>
+                </div>
+                <h4 class="font-bold text-sm mb-1 line-clamp-2">${deal.title}</h4>
+                <p class="text-xs text-[#4c4d9a] dark:text-gray-400 mb-4">${deal.company_name || 'No company'}</p>
+                <div class="flex items-center justify-between border-t border-dashed border-[#e7e7f3] dark:border-white/10 pt-3 mt-auto">
+                    <span class="text-sm font-bold">${formatCurrency(deal.value)}</span>
+                    <div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-[10px]">${initials}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderKanbanBoard(deals) {
+        const board = document.getElementById('kanban-board');
+        const dealsByStage = {};
+
+        STAGES.forEach(stage => dealsByStage[stage] = []);
+        deals.forEach(deal => {
+            const stage = deal.stage || 'discovery';
+            if (dealsByStage[stage]) {
+                dealsByStage[stage].push(deal);
+            }
+        });
+
+        let totalValue = 0;
+        let weightedValue = 0;
+        let activeDeals = 0;
+
+        board.innerHTML = STAGES.map(stage => {
+            const stageDeals = dealsByStage[stage];
+            const stageValue = stageDeals.reduce((sum, d) => sum + (d.value || 0), 0);
+            const colors = STAGE_COLORS[stage];
+
+            if (stage !== 'won' && stage !== 'lost') {
+                activeDeals += stageDeals.length;
+                totalValue += stageValue;
+                stageDeals.forEach(d => {
+                    weightedValue += (d.value || 0) * ((d.probability || 0) / 100);
+                });
+            }
+
+            const cardsHtml = stageDeals.length > 0
+                ? stageDeals.map(renderDealCard).join('')
+                : `<div class="flex flex-col gap-4 items-center justify-center h-24 border-2 border-dashed border-[#e7e7f3] dark:border-white/10 rounded-xl">
+                       <span class="text-xs text-[#cfd0e7] font-medium">No deals</span>
+                   </div>`;
+
+            return `
+                <div class="kanban-column flex flex-col h-full" data-stage="${stage}">
+                    <div class="flex items-center justify-between mb-4 px-2">
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-bold text-sm ${colors.header}">${stage.charAt(0).toUpperCase() + stage.slice(1)}</h3>
+                            <span class="${colors.count} text-[10px] px-1.5 py-0.5 rounded-full font-bold">${stageDeals.length}</span>
+                        </div>
+                        <span class="text-xs font-semibold text-[#4c4d9a]">${formatCurrency(stageValue)}</span>
+                    </div>
+                    <div class="flex flex-col gap-4 overflow-y-auto pb-4 pr-1 stage-dropzone ${stage === 'won' || stage === 'lost' ? 'opacity-70' : ''}">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // Update footer stats
+        document.getElementById('stat-total-value').textContent = formatCurrency(totalValue);
+        document.getElementById('stat-weighted-value').textContent = formatCurrency(weightedValue);
+        document.getElementById('stat-active-deals').textContent = activeDeals;
+        document.getElementById('last-updated').textContent = 'Last updated: just now';
+
+        // Setup drag and drop
+        setupDragAndDrop();
+    }
+
+    function setupDragAndDrop() {
+        const cards = document.querySelectorAll('.deal-card');
+        const dropzones = document.querySelectorAll('.stage-dropzone');
+
+        cards.forEach(card => {
+            card.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', card.dataset.dealId);
+                card.classList.add('opacity-50');
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('opacity-50');
+            });
+        });
+
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('bg-primary/5');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('bg-primary/5');
+            });
+
+            zone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                zone.classList.remove('bg-primary/5');
+
+                const dealId = e.dataTransfer.getData('text/plain');
+                const newStage = zone.closest('.kanban-column').dataset.stage;
+
+                try {
+                    const token = localStorage.getItem('crm_token');
+                    await fetch(`${API_BASE}/deals/${dealId}/stage`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ stage: newStage })
+                    });
+
+                    loadDeals();
+                } catch (error) {
+                    console.error('Error updating deal stage:', error);
+                }
+            });
+        });
+    }
+
+    async function loadDeals() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const response = await fetch(`${API_BASE}/deals`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) throw new Error('Failed to load deals');
+
+            const deals = await response.json();
+            renderKanbanBoard(deals);
+
+        } catch (error) {
+            console.error('Error loading deals:', error);
+            document.getElementById('kanban-board').innerHTML =
+                '<div class="flex items-center justify-center w-full h-full text-rose-500">Error loading deals</div>';
+        }
+    }
+
+    async function loadLeadsForSelect() {
+        try {
+            const token = localStorage.getItem('crm_token');
+            const response = await fetch(`${API_BASE}/leads`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) return;
+
+            const leads = await response.json();
+            const select = document.getElementById('deal-lead-select');
+            select.innerHTML = '<option value="">Select Lead</option>' +
+                leads.map(lead => `<option value="${lead.id}">${lead.company_name || lead.contact_name}</option>`).join('');
+
+        } catch (error) {
+            console.error('Error loading leads:', error);
+        }
+    }
+
+    // Modal handlers
+    const modal = document.getElementById('create-deal-modal');
+    document.getElementById('create-deal-btn').addEventListener('click', () => {
+        loadLeadsForSelect();
+        modal.classList.remove('hidden');
+    });
+    document.getElementById('close-deal-modal').addEventListener('click', () => modal.classList.add('hidden'));
+    document.getElementById('cancel-deal-modal').addEventListener('click', () => modal.classList.add('hidden'));
+
+    // Create deal form
+    document.getElementById('create-deal-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.target);
+        const dealData = Object.fromEntries(formData);
+
+        try {
+            const token = localStorage.getItem('crm_token');
+            const response = await fetch(`${API_BASE}/deals`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dealData)
+            });
+
+            if (!response.ok) throw new Error('Failed to create deal');
+
+            modal.classList.add('hidden');
+            e.target.reset();
+            loadDeals();
+
+        } catch (error) {
+            console.error('Error creating deal:', error);
+            alert('Failed to create deal. Please try again.');
+        }
+    });
+
+    // Refresh button
+    document.getElementById('refresh-btn').addEventListener('click', loadDeals);
+
+    // Search deals
+    let searchTimeout;
+    document.getElementById('search-deals').addEventListener('input', async (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(async () => {
+            const query = e.target.value.toLowerCase();
+            if (!query) {
+                loadDeals();
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('crm_token');
+                const response = await fetch(`${API_BASE}/deals`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) return;
+
+                const deals = await response.json();
+                const filtered = deals.filter(deal =>
+                    (deal.title || '').toLowerCase().includes(query) ||
+                    (deal.company_name || '').toLowerCase().includes(query)
+                );
+                renderKanbanBoard(filtered);
+
+            } catch (error) {
+                console.error('Error searching deals:', error);
+            }
+        }, 300);
+    });
+
+    // Initialize
+    loadDeals();
+</script>
+</body></html>

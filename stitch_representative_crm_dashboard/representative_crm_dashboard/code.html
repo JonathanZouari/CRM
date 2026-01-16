@@ -413,28 +413,31 @@
             if (!dashboardRes.ok) throw new Error('Failed to load dashboard');
             const dashboard = await dashboardRes.json();
 
-            // Update KPIs
-            document.getElementById('kpi-leads').textContent = dashboard.total_leads?.toLocaleString() || '0';
-            document.getElementById('kpi-leads-change').textContent = '+' + (dashboard.new_leads_this_month || 0);
+            // Update KPIs - data is nested under kpis object
+            const kpis = dashboard.kpis || {};
+            document.getElementById('kpi-leads').textContent = kpis.total_leads?.toLocaleString() || '0';
+            document.getElementById('kpi-leads-change').textContent = '+' + (kpis.leads_this_month || 0);
 
-            const conversionRate = dashboard.conversion_rate || 0;
+            const conversionRate = kpis.conversion_rate || 0;
             document.getElementById('kpi-conversion').textContent = conversionRate.toFixed(1) + '%';
             document.getElementById('kpi-conversion-change').textContent = conversionRate > 15 ? '+' + (conversionRate - 15).toFixed(1) + '%' : '0%';
 
-            document.getElementById('kpi-revenue').innerHTML = formatCurrency(dashboard.total_revenue || 0) +
-                ' <span class="text-xs font-normal text-slate-400">/ ' + formatCurrency(dashboard.projected_revenue || 0) + '</span>';
-            const revenuePercent = dashboard.projected_revenue ? ((dashboard.total_revenue / dashboard.projected_revenue) * 100 - 100).toFixed(0) : 0;
+            const totalRevenue = kpis.total_revenue || 0;
+            const activeDealsValue = kpis.active_deals_value || totalRevenue * 1.5; // Estimate if not available
+            document.getElementById('kpi-revenue').innerHTML = formatCurrency(totalRevenue) +
+                ' <span class="text-xs font-normal text-slate-400">/ ' + formatCurrency(activeDealsValue) + '</span>';
+            const revenuePercent = activeDealsValue ? ((totalRevenue / activeDealsValue) * 100 - 100).toFixed(0) : 0;
             const revenueChangeEl = document.getElementById('kpi-revenue-change');
             revenueChangeEl.textContent = (revenuePercent >= 0 ? '+' : '') + revenuePercent + '%';
             revenueChangeEl.className = revenuePercent >= 0
                 ? 'text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-full'
                 : 'text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-full';
 
-            document.getElementById('kpi-deals').textContent = dashboard.active_deals || '0';
-            document.getElementById('kpi-deals-change').textContent = '+' + (dashboard.deals_this_month || 0);
+            document.getElementById('kpi-deals').textContent = kpis.active_deals || '0';
+            document.getElementById('kpi-deals-change').textContent = '+' + (kpis.active_deals || 0);
 
-            document.getElementById('kpi-tasks').textContent = dashboard.overdue_tasks || '0';
-            document.getElementById('kpi-tasks-change').textContent = dashboard.overdue_tasks > 0 ? 'Overdue' : '0%';
+            document.getElementById('kpi-tasks').textContent = kpis.tasks_due_today || '0';
+            document.getElementById('kpi-tasks-change').textContent = kpis.overdue_tasks > 0 ? 'Overdue' : 'On track';
 
             // Load tasks due today
             loadTasks(headers);

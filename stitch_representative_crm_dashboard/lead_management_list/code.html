@@ -484,12 +484,12 @@
 
     // View lead details
     function viewLead(leadId) {
-        window.location.href = `../lead_details_&_ai_scoring/code.html?id=${leadId}`;
+        window.location.href = `/lead/${leadId}`;
     }
 
     // Edit lead (placeholder)
     function editLead(leadId) {
-        window.location.href = `../lead_details_&_ai_scoring/code.html?id=${leadId}&edit=true`;
+        window.location.href = `/lead/${leadId}?edit=true`;
     }
 
     // Delete lead

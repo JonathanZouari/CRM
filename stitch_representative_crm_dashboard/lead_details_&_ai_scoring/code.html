@@ -293,13 +293,15 @@
         window.location.href = '/login';
     }
 
-    // Get lead ID from URL
+    // Get lead ID from URL path (e.g., /lead/123 -> 123)
+    // Support both path parameter and query string for backwards compatibility
+    const pathParts = window.location.pathname.split('/');
     const urlParams = new URLSearchParams(window.location.search);
-    const leadId = urlParams.get('id');
+    const leadId = pathParts[pathParts.length - 1] || urlParams.get('id');
 
-    if (!leadId) {
+    if (!leadId || leadId === 'lead') {
         alert('No lead ID provided');
-        window.location.href = '../lead_management_list/code.html';
+        window.location.href = '/leads';
     }
 
     // Format currency
@@ -440,7 +442,7 @@
         } catch (error) {
             console.error('Error loading lead:', error);
             alert('Failed to load lead data');
-            window.location.href = '../lead_management_list/code.html';
+            window.location.href = '/leads';
         }
     }
 

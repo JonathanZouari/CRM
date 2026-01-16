@@ -24,3 +24,6 @@ chromadb>=0.4.0
 # Utilities
 python-dateutil>=2.8.0
 uuid6>=2024.1.0
+
+# Production Server
+gunicorn>=21.0.0

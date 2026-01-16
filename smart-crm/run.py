@@ -16,13 +16,13 @@ if __name__ == '__main__':
     debug = os.getenv('FLASK_ENV', 'development') == 'development'
 
     print(f"""
-    ╔═══════════════════════════════════════════════════════════╗
-    ║                    Smart CRM API                          ║
-    ╠═══════════════════════════════════════════════════════════╣
-    ║  Running on: http://localhost:{port}                       ║
-    ║  Debug mode: {debug}                                        ║
-    ║  API Docs:   http://localhost:{port}/api/health            ║
-    ╚═══════════════════════════════════════════════════════════╝
+    ===========================================================
+                        Smart CRM API
+    ===========================================================
+      Running on: http://localhost:{port}
+      Debug mode: {debug}
+      API Docs:   http://localhost:{port}/api/health
+    ===========================================================
     """)
 
     app.run(host='0.0.0.0', port=port, debug=debug)
